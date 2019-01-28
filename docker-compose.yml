@@ -1,0 +1,37 @@
+version: '3'
+# define all services
+services:
+  # our service is called PHP Laravel ;-)
+  php-laravel:
+    # we want to use the image which is build from our Dockerfile
+    build: .
+    # apache is running on port 80 but we want to expose this to port 4000 on ou                                                                                        r local machine
+    container_name: webapp
+    restart: always
+    ports:
+      - "8000:80"
+      - "443:443"
+    links:
+      - redis
+    # we mount the working dir into the container, handy for development
+    volumes:
+      - ./ABC:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/php.ini
+      - ./000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./qos.conf://etc/apache2/mods-enabled/qos.conf
+
+
+  redis:
+    image: redis:3.0
+    sysctls:
+      net.core.somaxconn: 1024
+    container_name: redis
+    command: redis-server --requirepass kiple123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+volumes:
+  redis-data:
+  dbdata:
+
